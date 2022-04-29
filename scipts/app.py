@@ -38,7 +38,8 @@ app.layout = html.Div([
                     value=10,
                     min=1,
                     max=df.shape[0],
-                    style={'width': '65px', 'margin': '0 5px 0 0', 'fontSize': '1rem'}
+                    style={'width': '65px',
+                           'margin': '0 5px 0 0', 'fontSize': '1rem'}
                 ),
                 html.Label(' TED talks by ')
             ]),
@@ -53,13 +54,14 @@ app.layout = html.Div([
             dcc.Graph(id='talks-content'),
             dcc.RangeSlider(
                 id='talks-year',
-                min=year_min, 
-                max=year_max, 
+                min=year_min,
+                max=year_max,
                 step=1,
                 marks={
-                    i: {'label': f'{i}', 'style': {'transform': 'rotate(-45deg)'}} 
+                    i: {'label': f'{i}', 'style': {
+                        'transform': 'rotate(-45deg)'}}
                     for i in range(year_min, year_max + 1)
-                }, 
+                },
                 value=[year_min, year_max]
             )
         ]),
@@ -78,7 +80,8 @@ app.layout = html.Div([
                     value=10,
                     min=1,
                     max=df.shape[0],
-                    style={'width': '65px', 'margin': '0 5px 0 0', 'fontSize': '1rem'}
+                    style={'width': '65px',
+                           'margin': '0 5px 0 0', 'fontSize': '1rem'}
                 ),
                 html.Label(' TED speakers by ')
             ]),
@@ -113,15 +116,47 @@ app.layout = html.Div([
             dcc.Graph(id='time-series-content'),
             dcc.RangeSlider(
                 id='time-series-year',
-                min=year_min, 
-                max=year_max, 
+                min=year_min,
+                max=year_max,
                 step=1,
                 marks={
-                    i: {'label': f'{i}', 'style': {'transform': 'rotate(-45deg)'}} 
+                    i: {'label': f'{i}', 'style': {
+                        'transform': 'rotate(-45deg)'}}
                     for i in range(year_min, year_max + 1)
-                }, 
+                },
                 value=[year_min, year_max]
             )
+        ]),
+        html.Br(),
+        html.Br(),
+
+        # TED talks by speaker
+        html.Hr(),
+        html.Br(),
+        html.Div([
+            html.Div([
+                html.Label('Top ', style={'margin': '0 0 0 50px'}),
+                dcc.Input(
+                    id='talks-per-speaker-number',
+                    type='number',
+                    value=10,
+                    min=1,
+                    max=df.shape[0],
+                    style={'width': '65px',
+                           'margin': '0 5px 0 0', 'fontSize': '1rem'}
+                ),
+                html.Label(' TED talks by ')
+            ]),
+            html.Div([
+                dcc.Dropdown(
+                    id='talks-per-speaker-dropdown',
+                    options=sorted(df['author'].str.strip(" '").unique()),
+                    value=df.groupby('author').agg(
+                        'count').sort_values('views')[-1:].index[0],
+                    clearable=False
+                )
+            ], style={'width': '600px', 'margin': '-30px 0 0 290px'}),
+            dcc.Graph(id='talks-per-speaker-content')
         ]),
         html.Br(),
         html.Br(),
@@ -138,10 +173,11 @@ app.layout = html.Div([
     Input(component_id='talks-year', component_property='value')
 )
 def update_talks_content(dropdown, num, year):
-    selected_date_df = df[(df['date'].dt.year >= year[0]) & (df['date'].dt.year <= year[1])]
+    selected_date_df = df[(df['date'].dt.year >= year[0])
+                          & (df['date'].dt.year <= year[1])]
     selected_date_df = selected_date_df.sort_values('views')[-num:]
     selected_date_df['date'] = selected_date_df['date'].dt.date
-    
+
     if dropdown == 'views':
         fig = px.bar(
             selected_date_df,
@@ -149,7 +185,7 @@ def update_talks_content(dropdown, num, year):
             y='title',
             hover_data=selected_date_df.columns
         )
-        
+
         fig.add_trace(go.Bar(
             y=selected_date_df['title'],
             x=selected_date_df['likes'],
@@ -162,9 +198,12 @@ def update_talks_content(dropdown, num, year):
         return fig
 
     elif dropdown == 'view-like ratio':
-        top_view_like_ratio = (selected_date_df['views'] / selected_date_df['likes']).rename('view_like_ratio')
-        top_view_like_ratio = pd.concat([selected_date_df, top_view_like_ratio], axis=1)
-        top_view_like_ratio = top_view_like_ratio.sort_values('view_like_ratio')[-num:]
+        top_view_like_ratio = (
+            selected_date_df['views'] / selected_date_df['likes']).rename('view_like_ratio')
+        top_view_like_ratio = pd.concat(
+            [selected_date_df, top_view_like_ratio], axis=1)
+        top_view_like_ratio = top_view_like_ratio.sort_values(
+            'view_like_ratio')[-num:]
 
         fig = px.bar(
             top_view_like_ratio,
@@ -172,7 +211,7 @@ def update_talks_content(dropdown, num, year):
             y='title',
             hover_data=top_view_like_ratio.columns
         )
-        
+
         return fig
 
 
@@ -184,8 +223,10 @@ def update_talks_content(dropdown, num, year):
 )
 def update_speakers_content(dropdown, num):
     if dropdown == 'video count':
-        top_speakers_by_count = df.groupby('author').agg('count').sort_values('views')[-num:].reset_index()
-        top_speakers_by_count = top_speakers_by_count.rename(columns={'views': 'count'})
+        top_speakers_by_count = df.groupby('author').agg(
+            'count').sort_values('views')[-num:].reset_index()
+        top_speakers_by_count = top_speakers_by_count.rename(
+            columns={'views': 'count'})
 
         fig = px.bar(
             top_speakers_by_count,
@@ -196,14 +237,15 @@ def update_speakers_content(dropdown, num):
         return fig
 
     elif dropdown == 'views':
-        top_speakers_by_views = df.groupby('author').sum().sort_values('views')[-num:].reset_index()
-        
+        top_speakers_by_views = df.groupby(
+            'author').sum().sort_values('views')[-num:].reset_index()
+
         fig = px.bar(
             top_speakers_by_views,
             x='views',
             y='author'
         )
-        
+
         return fig
 
 
@@ -214,17 +256,23 @@ def update_speakers_content(dropdown, num):
     Input(component_id='time-series-year', component_property='value')
 )
 def update_time_series_content(dropdown, year):
-    selected_date_df = df[(df['date'].dt.year >= year[0]) & (df['date'].dt.year <= year[1])]
+    selected_date_df = df[(df['date'].dt.year >= year[0])
+                          & (df['date'].dt.year <= year[1])]
     selected_date_df = selected_date_df.sort_values('views')
-    
-    if dropdown == 'month':
-        videos_per_month = selected_date_df.groupby(selected_date_df['date'].dt.month).agg('count')['views'].reset_index()
-        videos_per_month = videos_per_month.rename(columns={'date': 'month', 'views': 'count'})
 
-        views_per_upload_month = selected_date_df.groupby(selected_date_df['date'].dt.month)['views'].mean().reset_index()
-        views_per_upload_month = views_per_upload_month.rename(columns={'date': 'month'})
-        
-        fig = make_subplots(rows=2, cols=1, subplot_titles=("Total videos uploaded per month", "Average views per upload month"))
+    if dropdown == 'month':
+        videos_per_month = selected_date_df.groupby(
+            selected_date_df['date'].dt.month).agg('count')['views'].reset_index()
+        videos_per_month = videos_per_month.rename(
+            columns={'date': 'month', 'views': 'count'})
+
+        views_per_upload_month = selected_date_df.groupby(
+            selected_date_df['date'].dt.month)['views'].mean().reset_index()
+        views_per_upload_month = views_per_upload_month.rename(
+            columns={'date': 'month'})
+
+        fig = make_subplots(rows=2, cols=1, subplot_titles=(
+            "Total videos uploaded per month", "Average views per upload month"))
 
         fig.append_trace(go.Scatter(
             x=videos_per_month['month'],
@@ -241,19 +289,25 @@ def update_time_series_content(dropdown, year):
             name='views'
         ), row=2, col=1)
 
-        fig.update_xaxes(title_text="month", row=2, col=1, tickvals=np.arange(1, 13))
+        fig.update_xaxes(title_text="month", row=2,
+                         col=1, tickvals=np.arange(1, 13))
         fig.update_yaxes(title_text="views", row=2, col=1)
 
         return fig
 
     elif dropdown == 'year':
-        videos_per_year = selected_date_df.groupby(selected_date_df['date'].dt.year).agg('count')['views'].reset_index()
-        videos_per_year = videos_per_year.rename(columns={'date': 'year', 'views': 'count'})
-        
-        views_per_upload_year = selected_date_df.groupby(selected_date_df['date'].dt.year)['views'].sum().reset_index()
-        views_per_upload_year = views_per_upload_year.rename(columns={'date': 'year'})
+        videos_per_year = selected_date_df.groupby(
+            selected_date_df['date'].dt.year).agg('count')['views'].reset_index()
+        videos_per_year = videos_per_year.rename(
+            columns={'date': 'year', 'views': 'count'})
 
-        fig = make_subplots(rows=2, cols=1, subplot_titles=("Total videos uploaded per year", "Total views per upload year"))
+        views_per_upload_year = selected_date_df.groupby(
+            selected_date_df['date'].dt.year)['views'].sum().reset_index()
+        views_per_upload_year = views_per_upload_year.rename(
+            columns={'date': 'year'})
+
+        fig = make_subplots(rows=2, cols=1, subplot_titles=(
+            "Total videos uploaded per year", "Total views per upload year"))
 
         fig.append_trace(go.Scatter(
             x=videos_per_year['year'],
@@ -261,7 +315,8 @@ def update_time_series_content(dropdown, year):
             name='counts'
         ), row=1, col=1)
 
-        fig.update_xaxes(row=1, col=1, tickvals=np.arange(year[0], year[1] + 1), tickangle=-45)
+        fig.update_xaxes(row=1, col=1, tickvals=np.arange(
+            year[0], year[1] + 1), tickangle=-45)
         fig.update_yaxes(title_text="count", row=1, col=1)
 
         fig.append_trace(go.Scatter(
@@ -270,10 +325,32 @@ def update_time_series_content(dropdown, year):
             name='views'
         ), row=2, col=1)
 
-        fig.update_xaxes(title_text="year", row=2, col=1, tickvals=np.arange(year[0], year[1] + 1), tickangle=-45)
+        fig.update_xaxes(title_text="year", row=2, col=1, tickvals=np.arange(
+            year[0], year[1] + 1), tickangle=-45)
         fig.update_yaxes(title_text="views", row=2, col=1)
-        
+
         return fig
+
+
+# Function to render talks per speaker content
+@app.callback(
+    Output(component_id='talks-per-speaker-content',
+           component_property='figure'),
+    Input(component_id='talks-per-speaker-dropdown', component_property='value'),
+    Input(component_id='talks-per-speaker-number', component_property='value')
+)
+def update_speakers_content(dropdown, num):
+    talks_per_speaker = df[df['author'] == dropdown].sort_values('views')
+    talks_per_speaker['date'] = talks_per_speaker['date'].dt.date
+
+    fig = px.bar(
+        talks_per_speaker,
+        x='views',
+        y='title',
+        hover_data=talks_per_speaker.columns
+    )
+
+    return fig
 
 
 # main call
