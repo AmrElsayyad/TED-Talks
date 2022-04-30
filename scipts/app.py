@@ -2,7 +2,6 @@
 # visit http://127.0.0.1:8050/ in your web browser.
 
 import datetime as dt
-from turtle import bgcolor
 import dash_bootstrap_components as dbc
 import numpy as np
 import pandas as pd
@@ -37,14 +36,19 @@ app.layout = html.Div(
                         [
                             dbc.Col(
                                 [
-                                    # Top TED talks
+                                    # Top talks
                                     dbc.Card(
                                         [
                                             dbc.CardBody(
                                                 [
                                                     html.Div(
                                                         [
-                                                            html.Label("Top "),
+                                                            html.Label(
+                                                                "Top ",
+                                                                style=dict(
+                                                                    fontSize="1.5rem"
+                                                                ),
+                                                            ),
                                                             dcc.Input(
                                                                 id="talks-number",
                                                                 type="number",
@@ -54,9 +58,15 @@ app.layout = html.Div(
                                                                 style=dict(
                                                                     width="65px",
                                                                     margin="0 5px",
+                                                                    fontSize="1.5rem",
                                                                 ),
                                                             ),
-                                                            html.Label(" TED talks"),
+                                                            html.Label(
+                                                                " talks",
+                                                                style=dict(
+                                                                    fontSize="1.5rem"
+                                                                ),
+                                                            ),
                                                         ]
                                                     ),
                                                     dcc.Graph(id="talks-content"),
@@ -93,14 +103,19 @@ app.layout = html.Div(
                         [
                             dbc.Col(
                                 [
-                                    # Top TED speakers
+                                    # Top speakers
                                     dbc.Card(
                                         [
                                             dbc.CardBody(
                                                 [
                                                     html.Div(
                                                         [
-                                                            html.Label("Top "),
+                                                            html.Label(
+                                                                "Top ",
+                                                                style=dict(
+                                                                    fontSize="1.5rem"
+                                                                ),
+                                                            ),
                                                             dcc.Input(
                                                                 id="speakers-number",
                                                                 type="number",
@@ -110,32 +125,16 @@ app.layout = html.Div(
                                                                 style=dict(
                                                                     width="65px",
                                                                     margin="0 5px",
+                                                                    fontSize="1.5rem",
                                                                 ),
                                                             ),
                                                             html.Label(
-                                                                " TED speakers by "
+                                                                " speakers",
+                                                                style=dict(
+                                                                    fontSize="1.5rem"
+                                                                ),
                                                             ),
                                                         ]
-                                                    ),
-                                                    html.Div(
-                                                        [
-                                                            dcc.Dropdown(
-                                                                id="speakers-dropdown",
-                                                                options=[
-                                                                    "views",
-                                                                    "video count",
-                                                                ],
-                                                                value="views",
-                                                                clearable=False,
-                                                                style=dict(
-                                                                    color="black"
-                                                                ),
-                                                            )
-                                                        ],
-                                                        style=dict(
-                                                            width="200px",
-                                                            margin="-32px 0 0 225px",
-                                                        ),
                                                     ),
                                                     dcc.Graph(id="speakers-content"),
                                                 ]
@@ -147,14 +146,19 @@ app.layout = html.Div(
                             ),
                             dbc.Col(
                                 [
-                                    # TED talks by speaker
+                                    # talks by speaker
                                     dbc.Card(
                                         [
                                             dbc.CardBody(
                                                 [
                                                     html.Div(
                                                         [
-                                                            html.Label("Top "),
+                                                            html.Label(
+                                                                "Top ",
+                                                                style=dict(
+                                                                    fontSize="1.5rem"
+                                                                ),
+                                                            ),
                                                             dcc.Input(
                                                                 id="talks-per-speaker-number",
                                                                 type="number",
@@ -164,10 +168,14 @@ app.layout = html.Div(
                                                                 style=dict(
                                                                     width="65px",
                                                                     margin="0 5px",
+                                                                    fontSize="1.5rem",
                                                                 ),
                                                             ),
                                                             html.Label(
-                                                                " TED talks by "
+                                                                " talks by ",
+                                                                style=dict(
+                                                                    fontSize="1.5rem"
+                                                                ),
                                                             ),
                                                         ]
                                                     ),
@@ -195,8 +203,9 @@ app.layout = html.Div(
                                                             )
                                                         ],
                                                         style=dict(
-                                                            width="385px",
-                                                            margin="-32px 0 0 195px",
+                                                            width="400px",
+                                                            margin="-36px 0 0 205px",
+                                                            fontSize="1.2rem",
                                                         ),
                                                     ),
                                                     dcc.Graph(
@@ -222,7 +231,14 @@ app.layout = html.Div(
                                             dbc.CardBody(
                                                 [
                                                     html.Div(
-                                                        [html.Label("TED talks per ")]
+                                                        [
+                                                            html.Label(
+                                                                "TED talks per ",
+                                                                style=dict(
+                                                                    fontSize="1.5rem"
+                                                                ),
+                                                            )
+                                                        ]
                                                     ),
                                                     html.Div(
                                                         [
@@ -241,7 +257,8 @@ app.layout = html.Div(
                                                         ],
                                                         style=dict(
                                                             width="110px",
-                                                            margin="-28px 0 0 100px",
+                                                            margin="-33px 0 0 150px",
+                                                            fontSize="1.2rem",
                                                         ),
                                                     ),
                                                     dcc.Graph(id="time-series-content"),
@@ -322,30 +339,26 @@ def update_talks_content(num, year):
 
 
 # Function to render speakers content
-@app.callback(
-    Output("speakers-content", "figure"),
-    Input("speakers-dropdown", "value"),
-    Input("speakers-number", "value"),
-)
-def update_speakers_content(dropdown, num):
-    fig = go.Figure()
+@app.callback(Output("speakers-content", "figure"), Input("speakers-number", "value"))
+def update_speakers_content(num):
+    top_speakers_by_count = (
+        df.groupby("author").agg("count").sort_values("views").reset_index()
+    )
+    top_speakers_by_count = top_speakers_by_count[["author", "title"]].rename(
+        columns={"title": "video_count"}
+    )
+    df_with_count = df[-num:].merge(top_speakers_by_count, on="author")
 
-    if dropdown == "video count":
-        top_speakers_by_count = (
-            df.groupby("author").agg("count").sort_values("views")[-num:].reset_index()
-        )
-        top_speakers_by_count = top_speakers_by_count.rename(columns={"views": "count"})
+    fig = px.scatter(
+        df_with_count,
+        x="views",
+        y="author",
+        size="video_count",
+        size_max=30,
+        color="likes",
+        color_continuous_scale=px.colors.sequential.Redor,
+    )
 
-        fig = px.bar(top_speakers_by_count, x="count", y="author")
-
-    elif dropdown == "views":
-        top_speakers_by_views = (
-            df.groupby("author").sum().sort_values("views")[-num:].reset_index()
-        )
-
-        fig = px.bar(top_speakers_by_views, x="views", y="author")
-
-    fig.update_traces(marker_color="indianred")
     fig.update_layout(
         plot_bgcolor="rgba(0,0,0,0.1)",
         paper_bgcolor="rgba(0,0,0,0)",
@@ -437,7 +450,7 @@ def update_time_series_content(dropdown, year):
             col=1,
         )
 
-        fig.update_xaxes(row=1, col=1, tickvals=np.arange(1, 13))
+        fig.update_xaxes(title_text="month", row=1, col=1, tickvals=np.arange(1, 13))
         fig.update_yaxes(title_text="count", row=1, col=1)
 
         fig.append_trace(
@@ -488,7 +501,11 @@ def update_time_series_content(dropdown, year):
         )
 
         fig.update_xaxes(
-            row=1, col=1, tickvals=np.arange(year[0], year[1] + 1), tickangle=-45
+            title_text="year",
+            row=1,
+            col=1,
+            tickvals=np.arange(year[0], year[1] + 1),
+            tickangle=-45,
         )
         fig.update_yaxes(title_text="count", row=1, col=1)
 
@@ -516,6 +533,7 @@ def update_time_series_content(dropdown, year):
         paper_bgcolor="rgba(0,0,0,0)",
         autosize=True,
         template="plotly_dark",
+        height=720,
     )
     fig.update_xaxes(showline=True)
     fig.update_yaxes(showline=True)
