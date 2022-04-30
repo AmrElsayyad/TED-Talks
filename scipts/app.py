@@ -2,6 +2,7 @@
 # visit http://127.0.0.1:8050/ in your web browser.
 
 import datetime as dt
+import dash_bootstrap_components as dbc
 import numpy as np
 import pandas as pd
 import plotly.express as px
@@ -11,7 +12,7 @@ from dash import Dash, dcc, html, Input, Output
 from plotly.subplots import make_subplots
 
 
-app = Dash(__name__)
+app = Dash(__name__, external_stylesheets=[dbc.themes.SLATE])
 
 # Read data
 df = pd.read_csv('data/ted-talks.csv').dropna()
@@ -23,146 +24,139 @@ year_max = df['date'].dt.year.max()
 
 # HTML webpage layout
 app.layout = html.Div([
-    html.H1('TED talks'),
-    html.Div([
-
-        # Top TED talks
-        html.Hr(),
-        html.Br(),
-        html.Div([
-            html.Div([
-                html.Label('Top ', style={'margin': '0 0 0 50px'}),
-                dcc.Input(
-                    id='talks-number',
-                    type='number',
-                    value=10,
-                    min=1,
-                    max=df.shape[0],
-                    style={'width': '65px',
-                           'margin': '0 5px 0 0', 'fontSize': '1rem'}
-                ),
-                html.Label(' TED talks by ')
+    html.H1('TED talks', style={'color': 'red'}),
+    dbc.Card(
+        dbc.CardBody([
+            dbc.Row([
+                dbc.Col([
+                    # Top TED talks
+                    html.Div([
+                        html.Div([
+                            html.Label('Top '),
+                            dcc.Input(
+                                id='talks-number',
+                                type='number',
+                                value=10,
+                                min=1,
+                                max=df.shape[0],
+                                style={'width': '65px',
+                                    'margin': '0 5px'}
+                            ),
+                            html.Label(' TED talks by ')
+                        ]),
+                        html.Div([
+                            dcc.Dropdown(
+                                id='talks-dropdown',
+                                options=['views', 'view-like ratio'],
+                                value='views',
+                                clearable=False
+                            )
+                        ], style={'width': '200px', 'margin':'-32px 0 0 195px'}),
+                        dcc.Graph(id='talks-content'),
+                        dcc.RangeSlider(
+                            id='talks-year',
+                            min=year_min,
+                            max=year_max,
+                            step=1,
+                            marks={
+                                i: {'label': f'{i}', 'style': {
+                                    'transform': 'rotate(-45deg)'}}
+                                for i in range(year_min, year_max + 1)
+                            },
+                            value=[year_min, year_max]
+                        )
+                    ])
+                ], width=7),
+                dbc.Col([
+                    # Top TED speakers
+                    html.Div([
+                        html.Div([
+                            html.Label('Top '),
+                            dcc.Input(
+                                id='speakers-number',
+                                type='number',
+                                value=10,
+                                min=1,
+                                max=df.shape[0],
+                                style={'width': '65px', 'margin': '0 5px'}
+                            ),
+                            html.Label(' TED speakers by ')
+                        ]),
+                        html.Div([
+                            dcc.Dropdown(
+                                id='speakers-dropdown',
+                                options=['views', 'video count'],
+                                value='views',
+                                clearable=False
+                            )
+                        ], style={'width': '200px', 'margin': '-32px 0 0 225px'}),
+                        dcc.Graph(id='speakers-content')
+                    ])
+                ], width=5),
             ]),
-            html.Div([
-                dcc.Dropdown(
-                    id='talks-dropdown',
-                    options=['views', 'view-like ratio'],
-                    value='views',
-                    clearable=False
-                )
-            ], style={'width': '200px', 'margin': '-32px 0 0 295px', 'fontSize': '1.2rem'}),
-            dcc.Graph(id='talks-content'),
-            dcc.RangeSlider(
-                id='talks-year',
-                min=year_min,
-                max=year_max,
-                step=1,
-                marks={
-                    i: {'label': f'{i}', 'style': {
-                        'transform': 'rotate(-45deg)'}}
-                    for i in range(year_min, year_max + 1)
-                },
-                value=[year_min, year_max]
-            )
-        ]),
-        html.Br(),
-        html.Br(),
-
-        # Top TED speakers
-        html.Hr(),
-        html.Br(),
-        html.Div([
-            html.Div([
-                html.Label('Top ', style={'margin': '0 0 0 50px'}),
-                dcc.Input(
-                    id='speakers-number',
-                    type='number',
-                    value=10,
-                    min=1,
-                    max=df.shape[0],
-                    style={'width': '65px',
-                           'margin': '0 5px 0 0', 'fontSize': '1rem'}
-                ),
-                html.Label(' TED speakers by ')
-            ]),
-            html.Div([
-                dcc.Dropdown(
-                    id='speakers-dropdown',
-                    options=['views', 'video count'],
-                    value='views',
-                    clearable=False
-                )
-            ], style={'width': '200px', 'margin': '-32px 0 0 330px', 'fontSize': '1.2rem'}),
-            dcc.Graph(id='speakers-content')
-        ]),
-        html.Br(),
-        html.Br(),
-
-        # Time Series Analysis
-        html.Hr(),
-        html.Br(),
-        html.Div([
-            html.Div([
-                html.Label('TED talks per ', style={'margin': '0 0 0 50px'})
-            ]),
-            html.Div([
-                dcc.Dropdown(
-                    id='time-series-dropdown',
-                    options=['month', 'year'],
-                    value='month',
-                    clearable=False
-                )
-            ], style={'width': '110px', 'margin': '-32px 0 0 180px', 'fontSize': '1.2rem'}),
-            dcc.Graph(id='time-series-content'),
-            dcc.RangeSlider(
-                id='time-series-year',
-                min=year_min,
-                max=year_max,
-                step=1,
-                marks={
-                    i: {'label': f'{i}', 'style': {
-                        'transform': 'rotate(-45deg)'}}
-                    for i in range(year_min, year_max + 1)
-                },
-                value=[year_min, year_max]
-            )
-        ]),
-        html.Br(),
-        html.Br(),
-
-        # TED talks by speaker
-        html.Hr(),
-        html.Br(),
-        html.Div([
-            html.Div([
-                html.Label('Top ', style={'margin': '0 0 0 50px'}),
-                dcc.Input(
-                    id='talks-per-speaker-number',
-                    type='number',
-                    value=10,
-                    min=1,
-                    max=df.shape[0],
-                    style={'width': '65px',
-                           'margin': '0 5px 0 0', 'fontSize': '1rem'}
-                ),
-                html.Label(' TED talks by ')
-            ]),
-            html.Div([
-                dcc.Dropdown(
-                    id='talks-per-speaker-dropdown',
-                    options=sorted(df['author'].str.strip(" '").unique()),
-                    value=df.groupby('author').agg(
-                        'count').sort_values('views')[-1:].index[0],
-                    clearable=False
-                )
-            ], style={'width': '600px', 'margin': '-30px 0 0 290px'}),
-            dcc.Graph(id='talks-per-speaker-content')
-        ]),
-        html.Br(),
-        html.Br(),
-
-    ])
-], style={'padding': '10px 50px'})
+            html.Br(), 
+            html.Hr(),
+            dbc.Row([
+                dbc.Col([
+                    # Time Series Analysis
+                    html.Div([
+                        html.Div([
+                            html.Label('TED talks per ')
+                        ]),
+                        html.Div([
+                            dcc.Dropdown(
+                                id='time-series-dropdown',
+                                options=['month', 'year'],
+                                value='month',
+                                clearable=False
+                            )
+                        ], style={'width': '110px', 'margin': '-28px 0 0 100px'}),
+                        dcc.Graph(id='time-series-content'),
+                        dcc.RangeSlider(
+                            id='time-series-year',
+                            min=year_min,
+                            max=year_max,
+                            step=1,
+                            marks={
+                                i: {'label': f'{i}', 'style': {
+                                    'transform': 'rotate(-45deg)'}}
+                                for i in range(year_min, year_max + 1)
+                            },
+                            value=[year_min, year_max]
+                        )
+                    ])
+                ], width=6),
+                dbc.Col([
+                    # TED talks by speaker
+                    html.Div([
+                        html.Div([
+                            html.Label('Top '),
+                            dcc.Input(
+                                id='talks-per-speaker-number',
+                                type='number',
+                                value=10,
+                                min=1,
+                                max=df.shape[0],
+                                style={'width': '65px', 'margin': '0 5px'}
+                            ),
+                            html.Label(' TED talks by ')
+                        ]),
+                        html.Div([
+                            dcc.Dropdown(
+                                id='talks-per-speaker-dropdown',
+                                options=sorted(df['author'].str.strip(" '").unique()),
+                                value=df.groupby('author').agg(
+                                    'count').sort_values('views')[-1:].index[0],
+                                clearable=False
+                            )
+                        ], style={'width': '385px', 'margin': '-32px 0 0 195px'}),
+                        dcc.Graph(id='talks-per-speaker-content')
+                    ])
+                ], width=6)
+            ])
+        ]), color='white'
+    )
+], style={'padding': '30px 50px', 'color': 'black'})
 
 
 # Function to render talks content
@@ -334,13 +328,12 @@ def update_time_series_content(dropdown, year):
 
 # Function to render talks per speaker content
 @app.callback(
-    Output(component_id='talks-per-speaker-content',
-           component_property='figure'),
+    Output(component_id='talks-per-speaker-content', component_property='figure'),
     Input(component_id='talks-per-speaker-dropdown', component_property='value'),
     Input(component_id='talks-per-speaker-number', component_property='value')
 )
 def update_speakers_content(dropdown, num):
-    talks_per_speaker = df[df['author'] == dropdown].sort_values('views')
+    talks_per_speaker = df[df['author'] == dropdown].sort_values('views')[-num:]
     talks_per_speaker['date'] = talks_per_speaker['date'].dt.date
 
     fig = px.bar(
