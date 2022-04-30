@@ -11,7 +11,6 @@ import plotly.graph_objects as go
 from dash import Dash, dcc, html, Input, Output
 from plotly.subplots import make_subplots
 
-
 app = Dash(__name__, external_stylesheets=[dbc.themes.CYBORG])
 
 # Read data
@@ -20,7 +19,6 @@ df["date"] = pd.to_datetime(df["date"])
 df = df[df["date"] >= dt.datetime(2000, 1, 1)]
 year_min = df["date"].dt.year.min()
 year_max = df["date"].dt.year.max()
-
 
 # HTML webpage layout
 app.layout = html.Div(
@@ -52,9 +50,7 @@ app.layout = html.Div(
                                                             dcc.Input(
                                                                 id="talks-number",
                                                                 type="number",
-                                                                value=10,
                                                                 min=1,
-                                                                max=df.shape[0],
                                                                 style=dict(
                                                                     width="65px",
                                                                     margin="0 5px",
@@ -94,13 +90,8 @@ app.layout = html.Div(
                                         ]
                                     )
                                 ],
-                                width=12,
-                            )
-                        ]
-                    ),
-                    html.Br(),
-                    dbc.Row(
-                        [
+                                width=7,
+                            ),
                             dbc.Col(
                                 [
                                     # Top speakers
@@ -119,9 +110,7 @@ app.layout = html.Div(
                                                             dcc.Input(
                                                                 id="speakers-number",
                                                                 type="number",
-                                                                value=10,
                                                                 min=1,
-                                                                max=df.shape[0],
                                                                 style=dict(
                                                                     width="65px",
                                                                     margin="0 5px",
@@ -142,81 +131,7 @@ app.layout = html.Div(
                                         ]
                                     )
                                 ],
-                                width=6,
-                            ),
-                            dbc.Col(
-                                [
-                                    # talks by speaker
-                                    dbc.Card(
-                                        [
-                                            dbc.CardBody(
-                                                [
-                                                    html.Div(
-                                                        [
-                                                            html.Label(
-                                                                "Top ",
-                                                                style=dict(
-                                                                    fontSize="1.5rem"
-                                                                ),
-                                                            ),
-                                                            dcc.Input(
-                                                                id="talks-per-speaker-number",
-                                                                type="number",
-                                                                value=10,
-                                                                min=1,
-                                                                max=df.shape[0],
-                                                                style=dict(
-                                                                    width="65px",
-                                                                    margin="0 5px",
-                                                                    fontSize="1.5rem",
-                                                                ),
-                                                            ),
-                                                            html.Label(
-                                                                " talks by ",
-                                                                style=dict(
-                                                                    fontSize="1.5rem"
-                                                                ),
-                                                            ),
-                                                        ]
-                                                    ),
-                                                    html.Div(
-                                                        [
-                                                            dcc.Dropdown(
-                                                                id="talks-per-speaker-dropdown",
-                                                                options=sorted(
-                                                                    df["author"]
-                                                                    .str.strip(" '")
-                                                                    .unique()
-                                                                ),
-                                                                value=df.groupby(
-                                                                    "author"
-                                                                )
-                                                                .agg("count")
-                                                                .sort_values("views")[
-                                                                    -1:
-                                                                ]
-                                                                .index[0],
-                                                                clearable=False,
-                                                                style=dict(
-                                                                    color="black"
-                                                                ),
-                                                            )
-                                                        ],
-                                                        style=dict(
-                                                            width="400px",
-                                                            margin="-36px 0 0 205px",
-                                                            fontSize="1.2rem",
-                                                        ),
-                                                    ),
-                                                    dcc.Graph(
-                                                        id="talks-per-speaker-content"
-                                                    ),
-                                                ]
-                                            )
-                                        ]
-                                    )
-                                ],
-                                width=6,
+                                width=5,
                             ),
                         ]
                     ),
@@ -287,7 +202,84 @@ app.layout = html.Div(
                                     )
                                 ],
                                 width=12,
-                            )
+                            ),
+                        ]
+                    ),
+                    html.Br(),
+                    dbc.Row(
+                        [
+                            dbc.Col(
+                                [
+                                    # talks by speaker
+                                    dbc.Card(
+                                        [
+                                            dbc.CardBody(
+                                                [
+                                                    html.Div(
+                                                        [
+                                                            html.Label(
+                                                                "Top ",
+                                                                style=dict(
+                                                                    fontSize="1.5rem"
+                                                                ),
+                                                            ),
+                                                            dcc.Input(
+                                                                id="talks-per-speaker-number",
+                                                                type="number",
+                                                                min=1,
+                                                                style=dict(
+                                                                    width="65px",
+                                                                    margin="0 5px",
+                                                                    fontSize="1.5rem",
+                                                                ),
+                                                            ),
+                                                            html.Label(
+                                                                " talks by ",
+                                                                style=dict(
+                                                                    fontSize="1.5rem"
+                                                                ),
+                                                            ),
+                                                        ]
+                                                    ),
+                                                    html.Div(
+                                                        [
+                                                            dcc.Dropdown(
+                                                                id="talks-per-speaker-dropdown",
+                                                                options=sorted(
+                                                                    df["author"]
+                                                                    .str.strip(" '")
+                                                                    .unique()
+                                                                ),
+                                                                value=df.groupby(
+                                                                    "author"
+                                                                )
+                                                                .agg("count")
+                                                                .sort_values("views")[
+                                                                    -1:
+                                                                ]
+                                                                .index[0],
+                                                                clearable=False,
+                                                                style=dict(
+                                                                    color="black"
+                                                                ),
+                                                            )
+                                                        ],
+                                                        style=dict(
+                                                            width="400px",
+                                                            margin="-36px 0 0 205px",
+                                                            fontSize="1.2rem",
+                                                        ),
+                                                    ),
+                                                    html.Div(
+                                                        id="talks-per-speaker-content"
+                                                    ),
+                                                ]
+                                            )
+                                        ]
+                                    )
+                                ],
+                                width=12,
+                            ),
                         ]
                     ),
                 ]
@@ -301,15 +293,19 @@ app.layout = html.Div(
 # Function to render talks content
 @app.callback(
     Output("talks-content", "figure"),
+    Output("talks-number", "value"),
     Input("talks-number", "value"),
     Input("talks-year", "value"),
 )
 def update_talks_content(num, year):
+    if num is None:
+        num = 10
+
     selected_date_df = df[
         (df["date"].dt.year >= year[0]) & (df["date"].dt.year <= year[1])
     ]
     selected_date_df = selected_date_df.sort_values("views")[-num:]
-    selected_date_df["date"] = selected_date_df["date"].dt.date
+    selected_date_df["date"] = selected_date_df["date"].dt.strftime("%b, %Y")
 
     fig = px.bar(
         selected_date_df, x="views", y="title", hover_data=selected_date_df.columns
@@ -335,19 +331,26 @@ def update_talks_content(num, year):
         template="plotly_dark",
     )
 
-    return fig
+    return fig, min(num, selected_date_df.shape[0])
 
 
 # Function to render speakers content
-@app.callback(Output("speakers-content", "figure"), Input("speakers-number", "value"))
+@app.callback(
+    Output("speakers-content", "figure"),
+    Output("speakers-number", "value"),
+    Input("speakers-number", "value"),
+)
 def update_speakers_content(num):
-    top_speakers_by_count = (
-        df.groupby("author").agg("count").sort_values("views").reset_index()
-    )
+    if num is None:
+        num = 10
+
+    top_speakers_by_count = df.groupby("author").agg("count").reset_index()
     top_speakers_by_count = top_speakers_by_count[["author", "title"]].rename(
         columns={"title": "video_count"}
     )
-    df_with_count = df[-num:].merge(top_speakers_by_count, on="author")
+    df_with_count = df.sort_values("views")[-num:].merge(
+        top_speakers_by_count, on="author"
+    )
 
     fig = px.scatter(
         df_with_count,
@@ -368,34 +371,64 @@ def update_speakers_content(num):
     fig.update_xaxes(showline=True)
     fig.update_yaxes(showline=True)
 
-    return fig
+    return fig, min(num, df_with_count.shape[0])
 
 
 # Function to render talks per speaker content
 @app.callback(
-    Output("talks-per-speaker-content", "figure"),
-    Input("talks-per-speaker-dropdown", "value"),
+    Output("talks-per-speaker-content", "children"),
+    Output("talks-per-speaker-number", "value"),
     Input("talks-per-speaker-number", "value"),
+    Input("talks-per-speaker-dropdown", "value"),
 )
-def update_speakers_content(dropdown, num):
-    talks_per_speaker = df[df["author"] == dropdown].sort_values("views")[-num:]
-    talks_per_speaker["date"] = talks_per_speaker["date"].dt.date
+def update_talks_per_speaker_content(num, dropdown):
+    if num is None:
+        num = 5
 
-    fig = px.bar(
-        talks_per_speaker, x="views", y="title", hover_data=talks_per_speaker.columns
+    author_df = df[df["author"] == dropdown].sort_values("views", ascending=False)[:num]
+    author_df["date"] = author_df["date"].dt.strftime("%b, %Y")
+    author_df["views"] = author_df["views"].apply(
+        lambda n: f"{n / 1e6}M" if n > 1e6 else f"{n / 1e3}K" if n > 1e3 else f"{n}"
+    )
+    author_df["likes"] = author_df["likes"].apply(
+        lambda n: f"{n / 1e6}M" if n > 1e6 else f"{n / 1e3}K" if n > 1e3 else f"{n}"
     )
 
-    fig.update_traces(marker_color="indianred")
-    fig.update_layout(
-        plot_bgcolor="rgba(0,0,0,0.1)",
-        paper_bgcolor="rgba(0,0,0,0)",
-        autosize=True,
-        template="plotly_dark",
+    return (
+        dbc.Table(
+            [
+                html.Thead(
+                    html.Tr(
+                        [html.Th(col) for col in author_df.drop("link", axis=1).columns]
+                    )
+                )
+            ]
+            + [
+                html.Tbody(
+                    [
+                        html.Tr(
+                            [
+                                html.Td(
+                                    html.A(
+                                        author_df.loc[index, "title"],
+                                        href=author_df.loc[index, "link"],
+                                    )
+                                )
+                            ]
+                            + [
+                                html.Td(cell)
+                                for cell in author_df.drop(["title", "link"], axis=1)
+                                .loc[index, :]
+                                .values
+                            ]
+                        )
+                        for index in author_df.index
+                    ]
+                )
+            ]
+        ),
+        min(num, author_df.shape[0]),
     )
-    fig.update_xaxes(showline=True)
-    fig.update_yaxes(showline=True)
-
-    return fig
 
 
 # Function to render time series content
