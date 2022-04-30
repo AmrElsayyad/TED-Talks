@@ -51,7 +51,7 @@ app.layout = html.Div([
                                 value='views',
                                 clearable=False
                             )
-                        ], style={'width': '200px', 'margin':'-32px 0 0 195px'}),
+                        ], style={'width': '200px', 'margin':'-32px 0 0 195px', 'color': 'black'}),
                         dcc.Graph(id='talks-content'),
                         dcc.RangeSlider(
                             id='talks-year',
@@ -89,7 +89,7 @@ app.layout = html.Div([
                                 value='views',
                                 clearable=False
                             )
-                        ], style={'width': '200px', 'margin': '-32px 0 0 225px'}),
+                        ], style={'width': '200px', 'margin': '-32px 0 0 225px', 'color': 'black'}),
                         dcc.Graph(id='speakers-content')
                     ])
                 ], width=5),
@@ -110,7 +110,7 @@ app.layout = html.Div([
                                 value='month',
                                 clearable=False
                             )
-                        ], style={'width': '110px', 'margin': '-28px 0 0 100px'}),
+                        ], style={'width': '110px', 'margin': '-28px 0 0 100px', 'color': 'black'}),
                         dcc.Graph(id='time-series-content'),
                         dcc.RangeSlider(
                             id='time-series-year',
@@ -149,14 +149,14 @@ app.layout = html.Div([
                                     'count').sort_values('views')[-1:].index[0],
                                 clearable=False
                             )
-                        ], style={'width': '385px', 'margin': '-32px 0 0 195px'}),
+                        ], style={'width': '385px', 'margin': '-32px 0 0 195px', 'color': 'black'}),
                         dcc.Graph(id='talks-per-speaker-content')
                     ])
                 ], width=6)
             ])
-        ]), color='white'
+        ]), color='dark'
     )
-], style={'padding': '30px 50px', 'color': 'black'})
+], style={'padding': '30px 50px', 'color': 'white'})
 
 
 # Function to render talks content
