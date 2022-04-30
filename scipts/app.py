@@ -24,7 +24,7 @@ year_max = df["date"].dt.year.max()
 app.layout = html.Div(
     [
         html.H1(
-            "TED talks",
+            "TED Talks",
             style=dict(color="red", textShadow="rgb(127, 2, 2) 2px 2px 2px"),
         ),
         dbc.Card(
@@ -41,12 +41,7 @@ app.layout = html.Div(
                                                 [
                                                     html.Div(
                                                         [
-                                                            html.Label(
-                                                                "Top ",
-                                                                style=dict(
-                                                                    fontSize="1.5rem"
-                                                                ),
-                                                            ),
+                                                            html.Label("Top "),
                                                             dcc.Input(
                                                                 id="talks-number",
                                                                 type="number",
@@ -54,15 +49,9 @@ app.layout = html.Div(
                                                                 style=dict(
                                                                     width="65px",
                                                                     margin="0 5px",
-                                                                    fontSize="1.5rem",
                                                                 ),
                                                             ),
-                                                            html.Label(
-                                                                " talks",
-                                                                style=dict(
-                                                                    fontSize="1.5rem"
-                                                                ),
-                                                            ),
+                                                            html.Label(" talks"),
                                                         ]
                                                     ),
                                                     dcc.Graph(id="talks-content"),
@@ -101,12 +90,7 @@ app.layout = html.Div(
                                                 [
                                                     html.Div(
                                                         [
-                                                            html.Label(
-                                                                "Top ",
-                                                                style=dict(
-                                                                    fontSize="1.5rem"
-                                                                ),
-                                                            ),
+                                                            html.Label("Top "),
                                                             dcc.Input(
                                                                 id="speakers-number",
                                                                 type="number",
@@ -114,18 +98,24 @@ app.layout = html.Div(
                                                                 style=dict(
                                                                     width="65px",
                                                                     margin="0 5px",
-                                                                    fontSize="1.5rem",
                                                                 ),
                                                             ),
-                                                            html.Label(
-                                                                " speakers",
-                                                                style=dict(
-                                                                    fontSize="1.5rem"
-                                                                ),
-                                                            ),
+                                                            html.Label(" speakers"),
                                                         ]
                                                     ),
-                                                    dcc.Graph(id="speakers-content"),
+                                                    html.Br(),
+                                                    html.Label(
+                                                        "Bubble size indicates video counts",
+                                                        style=dict(
+                                                            margin="0 0 0 150px"
+                                                        ),
+                                                    ),
+                                                    dcc.Graph(
+                                                        id="speakers-content",
+                                                        style=dict(
+                                                            margin="-50px 0 0 0"
+                                                        ),
+                                                    ),
                                                 ]
                                             )
                                         ]
@@ -146,14 +136,7 @@ app.layout = html.Div(
                                             dbc.CardBody(
                                                 [
                                                     html.Div(
-                                                        [
-                                                            html.Label(
-                                                                "TED talks per ",
-                                                                style=dict(
-                                                                    fontSize="1.5rem"
-                                                                ),
-                                                            )
-                                                        ]
+                                                        [html.Label("TED talks per ")]
                                                     ),
                                                     html.Div(
                                                         [
@@ -172,8 +155,7 @@ app.layout = html.Div(
                                                         ],
                                                         style=dict(
                                                             width="110px",
-                                                            margin="-33px 0 0 150px",
-                                                            fontSize="1.2rem",
+                                                            margin="-29px 0px 0px 100px",
                                                         ),
                                                     ),
                                                     dcc.Graph(id="time-series-content"),
@@ -217,12 +199,7 @@ app.layout = html.Div(
                                                 [
                                                     html.Div(
                                                         [
-                                                            html.Label(
-                                                                "Top ",
-                                                                style=dict(
-                                                                    fontSize="1.5rem"
-                                                                ),
-                                                            ),
+                                                            html.Label("Top "),
                                                             dcc.Input(
                                                                 id="talks-per-speaker-number",
                                                                 type="number",
@@ -230,15 +207,9 @@ app.layout = html.Div(
                                                                 style=dict(
                                                                     width="65px",
                                                                     margin="0 5px",
-                                                                    fontSize="1.5rem",
                                                                 ),
                                                             ),
-                                                            html.Label(
-                                                                " talks by ",
-                                                                style=dict(
-                                                                    fontSize="1.5rem"
-                                                                ),
-                                                            ),
+                                                            html.Label(" talks by "),
                                                         ]
                                                     ),
                                                     html.Div(
@@ -266,8 +237,7 @@ app.layout = html.Div(
                                                         ],
                                                         style=dict(
                                                             width="400px",
-                                                            margin="-36px 0 0 205px",
-                                                            fontSize="1.2rem",
+                                                            margin="-32px 0px 0px 160px",
                                                         ),
                                                     ),
                                                     html.Div(
@@ -299,7 +269,7 @@ app.layout = html.Div(
 )
 def update_talks_content(num, year):
     if num is None:
-        num = 10
+        num = 8
 
     selected_date_df = df[
         (df["date"].dt.year >= year[0]) & (df["date"].dt.year <= year[1])
@@ -356,9 +326,9 @@ def update_speakers_content(num):
         df_with_count,
         x="views",
         y="author",
+        color="likes",
         size="video_count",
         size_max=30,
-        color="likes",
         color_continuous_scale=px.colors.sequential.Redor,
     )
 
@@ -367,6 +337,7 @@ def update_speakers_content(num):
         paper_bgcolor="rgba(0,0,0,0)",
         autosize=True,
         template="plotly_dark",
+        legend={"itemsizing": "trace"},
     )
     fig.update_xaxes(showline=True)
     fig.update_yaxes(showline=True)
